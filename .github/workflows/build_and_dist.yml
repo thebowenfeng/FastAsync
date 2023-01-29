@@ -1,0 +1,22 @@
+name: build and distribute
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+      - env:
+          USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+          python -m twine upload dist/* -u "$USERNAME" -p "$PASSWORD"
