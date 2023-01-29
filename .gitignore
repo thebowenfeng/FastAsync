@@ -1,3 +1,4 @@
 src/fast_async/__pycache__
 .idea
 dist
+src/fast_async.egg-info
