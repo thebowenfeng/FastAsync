@@ -1,6 +1,6 @@
 import sys
 from .exceptions.setup_exceptions import *
-from .types.tasks import AsyncTask
+from .types.tasks import AsyncTask, global_task_manager
 
 version = sys.version_info
 if version[0] < 3 or version[1] < 7:
@@ -19,3 +19,7 @@ def make_async(func):
         task.run()
         return task
     return inner
+
+
+def set_max_threads(num):
+    global_task_manager.max_threads = num
