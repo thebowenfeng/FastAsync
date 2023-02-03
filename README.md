@@ -2,20 +2,35 @@
 
 ![Publish to PyPi](https://github.com/thebowenfeng/FastAsync/actions/workflows/build_and_dist.yml/badge.svg)
 
-A thread based, asynchronous programming framework built for Python.
-Designed and optimized for speed. 
+A thread based, asynchronous programming framework built for Python, serving as
+an easier-to-use and sometimes faster alternative to asyncio and co-routines.
 
 Asyncio, the go-to asynchronous programming framework for Python, uses
-a single-threaded event loop to achieve concurrency. Although this prevents
-unnecessary computational overheads and race conditions, it is inherently not
-as fast as threads (even with inefficiencies brought along with GIL). In some
-scenarios where speed is of utmost importance and where computational resources
-are abundant, then it makes sense to use a multi-threading approach to concurrency.
+a single-threaded event loop to achieve concurrency. Event loops (and co-routines in general),
+relies on programs willingly yielding control to each other in order to achieve concurrency, also
+known as "cooperative multitasking". Although this design pattern 
+is fast and resource efficient, it requires users to be able to write well-designed code that can efficiently
+yield control.
+
+Unfortunately, this is often not the case. Python libraries are rarely designed to be
+asynchronous. In order words, most Python code is "non-divisive", they will not
+yield control to other functions, and therefore cannot take advantage of the event loops 
+implemented  by asyncio. This means asyncio will most often than not execute (poorly designed)
+"async" functions synchronously.
+
+Fast Async solves this problem by utilizing threads to achieve concurrency.
+Threads will always execute code in parallel*, with some resource overheads. This means that your code
+can leverage Fast Async out of the box, without special configurations or refactoring, yet still
+achieve concurrency.
 
 Fast Async is a high-level API for Python `threads`, providing users with the
 ability to `await` asynchronous code, and other features such as event-driven,
 pubsub model (similar to Javascript's ```Promise.then()```). It aims to serve as
 an alternative to asyncio, for users who require faster execution speed.
+
+**Python threads does not achieve OS level TPL (thread level parallelism) due to GIL 
+(global interpreter lock) making it that only 1 thread is ran at any time. That being said, for
+the most part, they still mimic behaviours of native threads*
 
 ## Installation
 
@@ -30,13 +45,22 @@ Alternatively, extract the folder ```src/fast_async```.
 
 ## Benchmarks
 
-#### Scenario (```sample.py```)
+#### Scenario (```src/sample.py```)
 
-A long-running network request and an expensive operation is executed asynchronously
+This scenario shows how detrimental poorly designed code are to asyncio's
+performance.
+
+Two functions, a network request and an expensive calculation is ran. Both
+functions are non-divisive (i.e does not yield control to each other), and hence
+asyncio will run both in sequential order.
 
 #### Result
 
-```fast-async``` is, on average, almost 50% faster than ```asyncio``` due to
+asyncio + aiohttp: 8.7s
+
+fast-async + requests: 5.1s
+
+```fast-async``` is, on average, almost 2x faster than ```asyncio``` due to
 asyncio executing the two tasks almost sequentially whilst fast-async leverages threads
 to execute them in parallel.
 
