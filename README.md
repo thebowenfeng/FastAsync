@@ -68,10 +68,11 @@ to execute them in parallel.
 
 #### When to use fast-async
 
-Fast-async should be used when execution speed is a higher priority.
-For example, uploading each frame of a video stream to a remote server.
-For cases where execution speed is not important, or when well-written code
-make the speed differences negligible, asyncio is preferred.
+fast-async's main use case is making otherwise "synchronous" functions run
+asynchronously with competitive execution speeds, but without the hassle
+of trying to optimize your functions. It is designed to work out of the box, with
+minimal pre-requisite knowledge. It is particularly useful when used in conjunction
+with a library that isn't designed to be asynchronous.
 
 #### What about ThreadPoolExecutor?
 
