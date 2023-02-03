@@ -219,3 +219,4 @@ def func2():
 
 await_first([func1(), func2()]) # Will return 1, because func1 finishes first
 ```
+
