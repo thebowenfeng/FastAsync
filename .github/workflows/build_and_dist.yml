@@ -2,9 +2,7 @@ name: Publish to PyPI
 on:
   push:
     branches:
-      - master
-    tags:
-      - '*'
+      - release
 jobs:
   build-and-distribute:
     runs-on: ubuntu-latest
